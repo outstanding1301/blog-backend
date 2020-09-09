@@ -5,11 +5,6 @@ const {
 } = Sequelize;
 module.exports = (sequelize, DataTypes) => {
   class Post extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       this.belongsTo(models.User, {foreignKey: 'author', targetKey: 'id'});
     }
@@ -28,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: "제목 없음"
     },
     contents: {
         type: DataTypes.TEXT,

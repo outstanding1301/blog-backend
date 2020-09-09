@@ -11,9 +11,7 @@ const createUser = async (id, password, nickname) => {
         
 
     await User.create({
-        id: id,
-        nickname: nickname,
-        password: password
+        id, nickname, password
     });
     
     return true;

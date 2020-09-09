@@ -5,11 +5,15 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const cors = require('cors');
 
+const morgan = require('morgan');
+
 const routes = require('./routes');
 
+app.use(morgan('dev'));
 app.use(cors());
 
 app.use(helmet())
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use(routes);
