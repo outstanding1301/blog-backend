@@ -34,7 +34,7 @@ const router = async (req, res) => {
     if(success) {
         res.status(200).json({
             success: true,
-            data: '유저 등록 성공: '+username
+            data: '회원 가입 성공: '+username
         })
     }
     else {

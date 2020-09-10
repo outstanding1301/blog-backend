@@ -5,7 +5,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const passport = require('passport');
 require('dotenv').config();
+require('./auth')(passport);
 
 const routes = require('./routes');
 
@@ -28,6 +30,10 @@ app.use(session({
         secure: false
     }
 }))
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(routes);
 
