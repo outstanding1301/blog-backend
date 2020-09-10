@@ -17,12 +17,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     author: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(15),
         unique: false,
         allowNull: false
     },
     title: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
         defaultValue: "제목 없음"
     },

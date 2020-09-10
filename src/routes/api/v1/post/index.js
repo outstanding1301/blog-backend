@@ -1,13 +1,13 @@
 const { raw } = require('body-parser');
 const express = require('express');
 const { Op } = require('sequelize');
-const {Post, User} = require('../../../database/models');
+const {Post, User} = require('../../../../database/models');
 
 const routes = express.Router();
 
 const findPostById = async (id) => {
     const post = await Post.findOne({
-        attributes: ['id', 'author', 'User.nickname', 'title', 'contents', 'postedDate', 'updatedDate'],
+        attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
             id
         },
@@ -25,7 +25,7 @@ const findPostById = async (id) => {
 
 const findPostByTitle = async (title) => {
     const post = await Post.findAll({
-        attributes: ['id', 'author', 'User.nickname', 'title', 'contents', 'postedDate', 'updatedDate'],
+        attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
             title: {
                 [Op.like]: `%${title}%`
@@ -45,9 +45,9 @@ const findPostByTitle = async (title) => {
 
 const findPostByAuthor = async (author) => {
     const post = await Post.findAll({
-        attributes: ['id', 'author', 'User.nickname', 'title', 'contents', 'postedDate', 'updatedDate'],
+        attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
-            author: {
+            'User.username': {
                 [Op.like]: `%${author}%`
             }
         },
@@ -65,7 +65,7 @@ const findPostByAuthor = async (author) => {
 
 const findPostByNickname = async (nickname) => {
     const user = await User.findOne({
-        attributes: ['id'],
+        attributes: ['username'],
         where: {
             nickname
         },
@@ -79,7 +79,7 @@ const findPostByNickname = async (nickname) => {
 
 const findPostByContents = async (contents) => {
     const post = await Post.findAll({
-        attributes: ['id', 'author', 'User.nickname', 'title', 'contents', 'postedDate', 'updatedDate'],
+        attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
             contents: {
                 [Op.like]: `%${contents}%`
@@ -100,7 +100,7 @@ const findPostByContents = async (contents) => {
 
 const findPostByTitleOrContents = async (contents) => {
     const post = await Post.findAll({
-        attributes: ['id', 'author', 'User.nickname', 'title', 'contents', 'postedDate', 'updatedDate'],
+        attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
             [Op.or]: [
                 {
@@ -138,32 +138,101 @@ const getPostRouter = async (req, res) => {
     const {id, contents, title, author, nickname} = req.body;
     if(id) {
         const post = await findPostById(id);
-        res.send(post);
+        if(post) {
+            res.status(200).json({
+                success: true,
+                data: post
+            })
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                data: '포스트를 찾을 수 없습니다.'
+            })
+        }
     }
     else if (title) {
         if(contents) {
             const posts = await findPostByTitleOrContents(title);
-            res.send(posts);
+            if(posts) {
+                res.status(200).json({
+                    success: true,
+                    data: posts
+                })
+            }
+            else {
+                res.status(404).json({
+                    success: false,
+                    data: '포스트를 찾을 수 없습니다.'
+                })
+            }
         }
         else {
             const posts = await findPostByTitle(title);
-            res.send(posts);
+            if(posts) {
+                res.status(200).json({
+                    success: true,
+                    data: posts
+                })
+            }
+            else {
+                res.status(404).json({
+                    success: false,
+                    data: '포스트를 찾을 수 없습니다.'
+                })
+            }
         }
     }
     else if (contents) {
         const posts = await findPostByContents(contents);
-        res.send(posts);
+        if(posts) {
+            res.status(200).json({
+                success: true,
+                data: posts
+            })
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                data: '포스트를 찾을 수 없습니다.'
+            })
+        }
     }
     else if (author) {
         const posts = await findPostByAuthor(author);
-        res.send(posts);
+        if(posts) {
+            res.status(200).json({
+                success: true,
+                data: posts
+            })
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                data: '포스트를 찾을 수 없습니다.'
+            })
+        }
     }
     else if (nickname) {
         const posts = await findPostByNickname(nickname);
-        res.send(posts);
+        if(posts) {
+            res.status(200).json({
+                success: true,
+                data: posts
+            })
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                data: '포스트를 찾을 수 없습니다.'
+            })
+        }
     }
     else {
-        res.status(500).send({});
+        res.status(404).json({
+            success: false,
+            data: '포스트를 찾을 수 없습니다.'
+        })
     }
 }
 
@@ -171,10 +240,14 @@ const postPostRouter = async (req, res) => {
     const {author, title, contents} = req.body;
     const result =  await createPost(author, title, contents);
     if(!result) {
-        res.status(500).send('실패');
+        next(new Error('글쓰기 실패!'));
         return;
     }
-    res.send('글 등록됨 ');
+    res.status(200).json({
+        success: true,
+        data: result.get()
+    })
+
     console.log(result.get());
 }
 

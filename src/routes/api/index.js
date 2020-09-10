@@ -1,12 +1,8 @@
 const express = require('express');
-const userRoute = require('./user');
-const userPost = require('./post');
 
 const routes = express.Router();
-const login = require('./login');
+const v1 = require('./v1');
 
-routes.use('/user', userRoute);
-routes.use('/post', userPost);
-routes.use('/login', login);
+routes.use('/v1', v1);
 
 module.exports = routes;
