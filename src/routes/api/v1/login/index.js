@@ -33,7 +33,7 @@ const tryLogin = async (id, password) => {
 
 const login = async (req, res, next) => {
     const {id, password} = req.body;
-    // console.log(req.body);
+    console.log(req.body);
     passport.authenticate('local', (authError, user, info) => {
         if(authError) {
             return next(authError);
