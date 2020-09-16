@@ -5,14 +5,16 @@ const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const passport = require('passport');
+// const passport = require('passport');
 
-require('app-module-path').addPath(__dirname);
+require('module-alias/register');
+// require('app-module-path').addPath(__dirname);
 
 require('dotenv').config();
-require('auth')(passport);
+// require('@src/auth')(passport);
 
-const routes = require('routes');
+const routes = require('@routes');
+const jwtMiddleware = require('@lib/jwtMiddleware');
 
 const app = express();
 
@@ -37,10 +39,10 @@ app.use(session({
     }
 }))
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-
+app.use(jwtMiddleware);
 app.use(routes);
 
 app.use((req, res, next) => {

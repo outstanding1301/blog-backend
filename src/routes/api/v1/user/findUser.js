@@ -1,4 +1,4 @@
-const {User} = require('database/models/index.js');
+const {User} = require('@models/index.js');
 
 const findUser = async (username) => {
     const user = await User.findOne({

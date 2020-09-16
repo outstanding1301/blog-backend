@@ -1,7 +1,7 @@
 const express = require('express');
-const findUser = require('routes/api/v1/user/findUser.js');
-const createUser = require('routes/api/v1/user/createUser.js');
-const { isLoggedIn } = require('auth/middlewares.js');
+const findUser = require('@api/v1/user/findUser.js');
+const createUser = require('@api/v1/user/createUser.js');
+const { isLoggedIn } = require('@src/auth/middlewares.js');
 
 const routes = express.Router();
 

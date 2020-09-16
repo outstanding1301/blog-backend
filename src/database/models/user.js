@@ -1,10 +1,55 @@
 'use strict';
 const Sequelize = require('sequelize');
+const jwt = require('jsonwebtoken');
 const {Model} = Sequelize;
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       this.hasMany(models.Post, {as : 'Posts', foreignKey: 'author', sourceKey: 'id'})
+    }
+
+    static async findUserById(id) {
+      const user = await User.findOne({
+          attributes: ['id', 'username', 'nickname', 'email', 'registerDate'],
+          where: {
+              id
+          },
+          raw: true
+      });
+      return user;
+    }
+    static async findUserByUsername(username) {
+      const user = await User.findOne({
+          attributes: ['id', 'username', 'nickname', 'email', 'registerDate'],
+          where: {
+              username
+          },
+          raw: true
+      });
+      return user;
+    }
+    static async findUser(query) {
+      const user = await User.findOne({
+          attributes: ['id', 'username', 'nickname', 'email', 'registerDate'],
+          where: query,
+          raw: true
+      });
+      return user;
+    }
+
+    static generateToken(user) {
+      const token = jwt.sign(
+          {
+              _id: user.id,
+              username: user.username,
+              email: user.email
+          },
+          process.env.JWT_SECRET,
+          {
+              expiresIn: '7d'
+          }
+      )
+      return token;
     }
   };
   User.init({

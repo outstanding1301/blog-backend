@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "moduleResolution": "node",
+      "baseUrl": ".",
+      "paths": {
+        "@models/*": ["src/database/models/*"],
+        "@models": ["src/database/models/index.js"],
+        "@routes/*": ["src/routes/*"],
+        "@routes": ["src/routes/index.js"],
+        "@api/*": ["src/routes/api/*"],
+        "@api": ["src/routes/api/index.js"],
+        "@src/*": ["src/*"],
+        "@src": ["src/index.js"],
+        "@lib/*": ["src/lib/*"],
+        "@lib": ["src/lib/index.js"],
+        "@/*": ["./*"]
+      }
+    }
+}

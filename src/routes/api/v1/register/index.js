@@ -1,5 +1,5 @@
-const {User} = require('database/models/index.js');
-const crypto = require('.crypto.js');
+const {User} = require('@models/index.js');
+const crypto = require('@src/.crypto.js');
 const { Op } = require('sequelize');
 
 const createUser = async (username, password, email, nickname) => {

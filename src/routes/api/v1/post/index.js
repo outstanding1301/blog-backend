@@ -1,7 +1,7 @@
 const { raw } = require('body-parser');
 const express = require('express');
 const { Op } = require('sequelize');
-const {Post, User} = require('database/models');
+const {Post, User} = require('@models');
 
 const routes = express.Router();
 

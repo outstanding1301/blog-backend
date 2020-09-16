@@ -1,9 +1,9 @@
 const express = require('express');
-const {User} = require('database/models/index.js');
-const crypto = require('.crypto.js');
+const {User} = require('@models/index.js');
+const crypto = require('@src/.crypto.js');
 const { Op } = require('sequelize');
 const passport = require('passport');
-const { isNotLoggedIn } = require('auth/middlewares.js');
+const { isNotLoggedIn } = require('@src/auth/middlewares.js');
 
 const routes = express.Router();
 
