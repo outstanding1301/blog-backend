@@ -6,10 +6,13 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
-require('dotenv').config();
-require('./auth')(passport);
 
-const routes = require('./routes');
+require('app-module-path').addPath(__dirname);
+
+require('dotenv').config();
+require('auth')(passport);
+
+const routes = require('routes');
 
 const app = express();
 

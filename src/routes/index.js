@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = express.Router();
 
-const apiRoute = require('./api');
+const apiRoute = require('routes/api');
 
 routes.use('/api', apiRoute);
 routes.get('/test', (req, res, next) => {

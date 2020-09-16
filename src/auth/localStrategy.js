@@ -1,8 +1,8 @@
 const LocalStrategy = require('passport-local').Strategy;
 
-const { User } = require('../database/models');
+const { User } = require('database/models');
 const { Op } = require('sequelize');
-const crypto = require('../.crypto.js');
+const crypto = require('.crypto.js');
 
 module.exports = (passport) => {
     passport.use(new LocalStrategy({

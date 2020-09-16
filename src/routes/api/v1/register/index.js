@@ -1,5 +1,5 @@
-const {User} = require('../../../../database/models/index.js');
-const crypto = require('../../../../.crypto.js');
+const {User} = require('database/models/index.js');
+const crypto = require('.crypto.js');
 const { Op } = require('sequelize');
 
 const createUser = async (username, password, email, nickname) => {
@@ -7,7 +7,10 @@ const createUser = async (username, password, email, nickname) => {
         where: {
             [Op.or]: [
                 {
-                    username, email
+                    username
+                },
+                {
+                    email
                 }
             ]
         }

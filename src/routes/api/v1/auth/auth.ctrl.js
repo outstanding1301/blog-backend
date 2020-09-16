@@ -7,7 +7,10 @@ const createUser = async (username, password, email, nickname) => {
         where: {
             [Op.or]: [
                 {
-                    username, email
+                    username
+                },
+                {
+                    email
                 }
             ]
         }
@@ -24,7 +27,7 @@ const createUser = async (username, password, email, nickname) => {
     return true;
 };
 
-const router = async (req, res) => {
+module.exports.register = async (req, res) => {
     const {username, password, email} = req.body;
     let {nickname} = req.body;
     if(!nickname) {
@@ -34,7 +37,7 @@ const router = async (req, res) => {
     if(success) {
         res.status(200).json({
             success: true,
-            data: '유저 등록 성공: '+username
+            data: '회원 가입 성공: '+username
         })
     }
     else {
@@ -43,8 +46,3 @@ const router = async (req, res) => {
             data: '중복된 아이디'
         })
     }
-}
-
-module.exports = {
-    createUser, router
-}

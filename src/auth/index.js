@@ -1,5 +1,5 @@
-const local = require('./localStrategy');
-const { User } = require('../database/models');
+const local = require('auth/localStrategy');
+const { User } = require('database/models');
 
 module.exports = (passport) => {
     passport.serializeUser((user, done) => {
