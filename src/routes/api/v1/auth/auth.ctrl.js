@@ -66,10 +66,7 @@ module.exports.register = async (req, res, next) => {
             maxAge: 1000 * 60 * 60 * 24 * 7,
             httpOnly: true
         });
-        res.status(200).json({
-            success: true,
-            data: user
-        })
+        res.status(200).json(user)
     }
     else {
         res.status(409).json({
@@ -81,29 +78,6 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
     const {id, password} = req.body;
-    // console.log(req.body);
-    // passport.authenticate('local', (authError, user, info) => {
-    //     if(authError) {
-    //         return next(authError);
-    //     }
-    //     if(!user) {
-    //         return res.status(401).json({
-    //             success: false,
-    //             data: '아이디가 없거나 비밀번호가 틀렸습니다.'
-    //         })
-    //     }
-    //     return req.login(user, (loginError) => {
-    //         if(loginError) {
-    //             console.error(loginError);
-    //             return next(loginError);
-    //         }
-    //         return res.status(200).json({
-    //             success: true,
-    //             data: user.nickname
-    //         })
-    //     });
-    // })(req, res, next);
-    // console.log(req.body);
     try {
         const user = await tryLogin(id, password);
         if(user) {
@@ -112,10 +86,7 @@ module.exports.login = async (req, res, next) => {
                 maxAge: 1000 * 60 * 60 * 24 * 7,
                 httpOnly: true
             });
-            res.status(200).json({
-                success: true,
-                data: user.nickname
-            })
+            res.status(200).json(user)
         }
         else {
             res.status(401).json({
@@ -139,10 +110,16 @@ module.exports.check = async (req, res) => {
         });
     }
 
-    res.status(200).json({
-        success: true,
-        data: user
-    })
+    const userInDB = await User.findUserById(user._id);
+    if(userInDB.nickname !== user.nickname) {
+        const tokenNew = User.generateToken(userInDB);
+        res.cookie('access_token', tokenNew, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            httpOnly: true
+        });
+        user.nickname = userInDB.nickname;
+    }
+    res.status(200).json(user)
 }
 
 module.exports.logout = async (req, res) => {

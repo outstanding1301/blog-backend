@@ -237,8 +237,17 @@ const getPostRouter = async (req, res) => {
 }
 
 const postPostRouter = async (req, res) => {
-    const {author, title, contents} = req.body;
-    const result =  await createPost(author, title, contents);
+    const {title, contents} = req.body;
+    console.log(title);
+    console.log(contents);
+    if(!req.user) {
+        res.status(403).json({
+            success: false,
+            data: '로그인 정보가 없습니다.'
+        })
+        return;
+    }
+    const result =  await createPost(req.user._id, title, contents);
     if(!result) {
         next(new Error('글쓰기 실패!'));
         return;

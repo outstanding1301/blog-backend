@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
           {
               _id: user.id,
               username: user.username,
+              nickname: user.nickname,
               email: user.email
           },
           process.env.JWT_SECRET,
