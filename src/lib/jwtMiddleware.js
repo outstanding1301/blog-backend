@@ -3,11 +3,9 @@ const jwt = require('jsonwebtoken');
 
 const jwtMiddleware = async (req, res, next) => {
     const token = req.cookies['access_token'];
-    // console.log(token);
     if(!token) return next();
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log(decoded);
 
         req.user = decoded;
 

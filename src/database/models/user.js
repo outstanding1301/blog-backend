@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       this.hasMany(models.Post, {as : 'Posts', foreignKey: 'author', sourceKey: 'id'})
+      this.hasMany(models.Comment, {as : 'Comments', foreignKey: 'userId', sourceKey: 'id'});
     }
 
     static async findUserById(id) {

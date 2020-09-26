@@ -5,13 +5,10 @@ const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-// const passport = require('passport');
 
 require('module-alias/register');
-// require('app-module-path').addPath(__dirname);
 
 require('dotenv').config();
-// require('@src/auth')(passport);
 
 const routes = require('@routes');
 const jwtMiddleware = require('@lib/jwtMiddleware');
@@ -26,7 +23,9 @@ app.use(cors({
 
 app.use(helmet())
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
