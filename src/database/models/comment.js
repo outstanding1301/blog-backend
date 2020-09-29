@@ -6,29 +6,42 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Comment extends Model {
     static associate(models) {
-      this.belongsTo(models.Post, {foreignKey: 'postId', targetKey: 'id'});
-      this.belongsTo(models.User, {foreignKey: 'userId', targetKey: 'id'});
+      this.belongsTo(models.Post, { foreignKey: 'postId', targetKey: 'id'});
+      this.belongsTo(models.User, { foreignKey: 'userId', targetKey: 'id'});
     }
     static async getComments(postId) {
-      const {User} = require('@models');
-        const comments = await Comment.findAll({
-            attributes: ['id', ['User.id', 'userId'], ['User.username', 'username'], ['User.nickname', 'nickname'], 'comment', 'postedDate', 'updatedDate'],
-            where: {
-              postId
-            },
-            include: [
-                {
-                    model: User,
-                    required: false,
-                    attributes: [id, nickname]
-                }
-            ],
-            order: [
-              ['postedDate', 'ASC'],
-            ],
-            raw: true
-        });
+      const {sequelize} = require('@models');
+        const sql = `
+        SELECT "Comment"."id"
+        , "Comment"."postId"
+        , "Comment"."userId"
+        , "Comment"."comment"
+        , "Comment"."postedDate"
+        , "Comment"."updatedDate"
+        , "User"."nickname" AS "nickname"
+        , "User"."username" AS "username"
+        FROM "Comments" AS "Comment" 
+        LEFT OUTER JOIN "Users" AS "User" 
+        ON "Comment"."userId" = "User"."id" 
+        WHERE "Comment"."postId" = '${postId}' 
+        ORDER BY "Comment"."postedDate" ASC;
+        `
+        const comments = sequelize.query(sql, {
+          type: Sequelize.QueryTypes.SELECT,
+          raw: true,
+          logging: false,
+        })
         return comments;
+    }
+
+    static async deleteComment(user, id) {
+        const userId = user.id;
+        const res = await Comment.destroy({
+          where: {
+            id, userId
+          }
+        })
+        return res;
     }
     
     static async writeComment(user, postId, comment) {

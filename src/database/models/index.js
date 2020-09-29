@@ -31,6 +31,7 @@ if (config.use_env_variable) {
 db['User'] = require('./user')(sequelize, Sequelize.DataTypes);
 db['Post'] = require('./post')(sequelize, Sequelize.DataTypes);
 db['Comment'] = require('./comment')(sequelize, Sequelize.DataTypes);
+db['Like'] = require('./like')(sequelize, Sequelize.DataTypes);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

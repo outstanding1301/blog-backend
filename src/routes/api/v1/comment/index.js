@@ -21,7 +21,7 @@ const getCommentsRouter = async (req, res) => {
 }
 
 const postCommentRouter = async (req, res) => {
-    const {postId, comment} = req.query;
+    const {postId, comment} = req.body;
 
     if(!req.user) {
         res.status(403).json({
@@ -43,7 +43,19 @@ const postCommentRouter = async (req, res) => {
 }
 
 const deleteCommentRouter = async (req, res) => {
-    const {commentId} = req.query;
+    const {id} = req.body;
+    if(!req.user) {
+        res.status(403).json({
+            success: false,
+            data: '로그인 정보가 없습니다.'
+        })
+        return;
+    }
+    const result =  await Comment.deleteComment(req.user, id);
+    if(result === 0) {
+        return res.status(404).json("그런 댓글은 없습니다.");
+    }
+    return res.status(200).json("댓글을 성공적으로 지웠습니다.");
 }
 
 routes.get('/', getCommentsRouter);

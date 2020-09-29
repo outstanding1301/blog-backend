@@ -110,7 +110,7 @@ module.exports.check = async (req, res) => {
         });
     }
 
-    const userInDB = await User.findUserById(user._id);
+    const userInDB = await User.findUserById(user.id);
     if(userInDB.nickname !== user.nickname) {
         const tokenNew = User.generateToken(userInDB);
         res.cookie('access_token', tokenNew, {

@@ -11,7 +11,7 @@ const jwtMiddleware = async (req, res, next) => {
 
         const now = Math.floor(Date.now() / 1000);
         if(decoded.exp - now < 60 * 60 * 24 * 3.5) {
-            const user = await User.findUserById(decoded._id);
+            const user = await User.findUserById(decoded.id);
             const tokenNew = User.generateToken(user);
             res.cookie('access_token', tokenNew, {
                 maxAge: 1000 * 60 * 60 * 24 * 7,

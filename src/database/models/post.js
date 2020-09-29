@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Comment, {as : 'Comments', foreignKey: 'postId', sourceKey: 'id'});
     }
     static async findPostById(id) {
-      const {User} = require('@models');
+      const {User, Like, Comment} = require('@models');
       const post = await Post.findOne({
         attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
         where: {
@@ -25,11 +25,17 @@ module.exports = (sequelize, DataTypes) => {
         ],
         raw: true
       });
+
+      const likes = await Like.getLikes(id);
+      const comments = await Comment.getComments(id);
+
+      post['likes'] = likes;
+      post['comments'] = comments;
       return post;
     }
     
     static async findPostsByAuthor(author, limit=10, isNew, id) {
-      const {sequelize, User} = require('@models');
+      const {sequelize, Comment, Like} = require('@models');
       isNew = isNew !== 'false';
       let condition = '';
 
@@ -40,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       SELECT "Post"."id", "Post"."author"
       , "User"."nickname", "User"."username"
       , "Post"."title", "Post"."contents"
-      , "Post"."postedDate", "Post"."updatedDate" 
+      , "Post"."postedDate", "Post"."updatedDate"
       FROM "Posts" AS "Post" 
       LEFT OUTER JOIN "Users" AS "User" 
       ON "Post"."author" = "User"."id" 
@@ -53,42 +59,86 @@ module.exports = (sequelize, DataTypes) => {
           type: Sequelize.QueryTypes.SELECT,
           raw: true,
         });
+
+        await Promise.all(posts.map(async post => {
+          const likes = await Like.getLikes(post.id);
+          const comments = await Comment.getComments(post.id);
+  
+          post['likes'] = likes;
+          post['comments'] = comments;
+  
+          return post;
+        }));
+        
       return posts;
     }
 
     static async findPosts(limit=10, isNew=true, id) {
+      const {sequelize, Comment, Like} = require('@models');
+
       isNew = isNew !== 'false';
       console.log({limit, isNew, id});
       const where = {};
+      let condition = ``;
       if(id) {
-        console.log(isNew);
-          where['id'] = {
-            [isNew ? Op.gt : Op.lt]: id
-          }
+        condition = ` WHERE "Post"."id" ${isNew ? '>' : '<'} ${id}`;
+        // console.log(isNew);
+        //   where['id'] = {
+        //     [isNew ? Op.gt : Op.lt]: id
+        //   }
       }
-      const {User} = require('@models');
-        const post = await Post.findAll({
-            attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
-            where: where,
-            include: [
-                {
-                    model: User,
-                    required: false,
-                    attributes: []
-                }
-            ],
-            order: [
-              ['postedDate', 'DESC'],
-              ['id', 'DESC'],
-            ],
-            limit: limit,
-            raw: true
+
+      const query = `
+      SELECT "Post"."id", "Post"."author"
+      , "User"."nickname", "User"."username"
+      , "Post"."title", "Post"."contents"
+      , "Post"."postedDate", "Post"."updatedDate"
+      FROM "Posts" AS "Post" 
+      LEFT OUTER JOIN "Users" AS "User" 
+      ON "Post"."author" = "User"."id" 
+      ${condition} 
+      ORDER BY "Post"."postedDate" DESC, "Post"."id" DESC
+      LIMIT ${limit};`
+
+      const posts = await sequelize.query(
+        query, {
+          type: Sequelize.QueryTypes.SELECT,
+          raw: true,
         });
-        return post;
+
+        await Promise.all(posts.map(async post => {
+          const likes = await Like.getLikes(post.id);
+          const comments = await Comment.getComments(post.id);
+  
+          post['likes'] = likes;
+          post['comments'] = comments;
+  
+          return post;
+        }));
+
+      // const {User} = require('@models');
+      //   const posts = await Post.findAll({
+      //       attributes: ['id', 'author', 'User.nickname', 'User.username', 'title', 'contents', 'postedDate', 'updatedDate'],
+      //       where: where,
+      //       include: [
+      //           {
+      //               model: User,
+      //               required: false,
+      //               attributes: []
+      //           }
+      //       ],
+      //       order: [
+      //         ['postedDate', 'DESC'],
+      //         ['id', 'DESC'],
+      //       ],
+      //       limit: limit,
+      //       raw: true
+      //   });
+        return posts;
     }
 
-    static async deletePost(author, id) {
-      const {User} = require('@models');
+    static async deletePost(user, id) {
+        const author = user.id;
         const res = await Post.destroy({
           where: {
             id, author
@@ -97,7 +147,8 @@ module.exports = (sequelize, DataTypes) => {
         return res;
     }
 
-    static async createPost(author, title, contents) {
+    static async createPost(user, title, contents) {
+      const author = user.id;
       const result = await Post.create({
           author, title, contents
       });
