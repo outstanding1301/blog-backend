@@ -43,7 +43,7 @@ const postPostRouter = async (req, res) => {
 }
 
 const deletePostRouter = async (req, res) => {
-    const {id} = req.body;
+    const {id} = req.query;
     if(!req.user) {
         res.status(403).json({
             success: false,
@@ -55,7 +55,7 @@ const deletePostRouter = async (req, res) => {
     if(result === 0) {
         return res.status(404).json("그런 글은 없습니다.");
     }
-    return res.status(200).json("글을 성공적으로 지웠습니다.");
+    return res.status(200).json(id);
 }
 
 routes.get('/', getPostRouter);
