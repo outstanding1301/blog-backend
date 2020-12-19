@@ -4,7 +4,8 @@ const {Post} = require('@models');
 const routes = express.Router();
 
 const getPostRouter = async (req, res) => {
-    const {id, author} = req.query;
+    const {id} = req.query;
+    console.log(req.query);
     if(id) {
         const post = await Post.findPostById(id);
         if(post) {
@@ -42,18 +43,6 @@ const postPostRouter = async (req, res) => {
     res.status(200).json(result.get());
 }
 
-const uploadImageRouter = async (req, res) => {
-    const {img} = req.body;
-    if(!req.user) {
-        res.status(403).json({
-            success: false,
-            data: '로그인 정보가 없습니다.'
-        })
-        return;
-    }
-    console.log(img);
-}
-
 const deletePostRouter = async (req, res) => {
     const {id} = req.query;
     if(!req.user) {
@@ -73,6 +62,5 @@ const deletePostRouter = async (req, res) => {
 routes.get('/', getPostRouter);
 routes.post('/', postPostRouter);
 routes.delete('/', deletePostRouter);
-routes.post('/img', uploadImageRouter);
 
 module.exports = routes;

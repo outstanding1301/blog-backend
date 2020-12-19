@@ -37,8 +37,11 @@ module.exports = (sequelize, DataTypes) => {
       const userId = user.id;
 
       const like = await Like.count({
-        userId, postId
+        where: {
+          userId, postId
+        }
       });
+      console.log(like);
       if (like == 0) {
         const sql = `INSERT INTO "Likes" ("userId","postId","likeDate") VALUES ('${userId}','${postId}','${new Date().toUTCString()}');`
 
