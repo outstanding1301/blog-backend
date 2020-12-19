@@ -4,7 +4,8 @@ const {Post} = require('@models');
 const routes = express.Router();
 
 const getPostRouter = async (req, res) => {
-    const {id, author} = req.query;
+    const {id} = req.query;
+    console.log(req.query);
     if(id) {
         const post = await Post.findPostById(id);
         if(post) {
